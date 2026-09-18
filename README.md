@@ -1,58 +1,145 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Clarif
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Leer en español: [README.es.md](README.es.md)**
 
-## About Laravel
+Clarif ingests raw [SARIF](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) reports
+(CodeQL, ESLint, Semgrep), normalizes every finding into a single model, stores them, and diffs two
+runs to surface what is **new**, **fixed**, and **persistent**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+It is a single-user tool (no authentication) built with Laravel 13 and PostgreSQL.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Status
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The project is built in phases. **Phase 0 (bootstrap) is complete**; the data model, ingestion, UI,
+and diffing are not implemented yet. See the [roadmap](#roadmap).
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3+ (developed against 8.4) with the `pdo_pgsql` and `pgsql` extensions enabled.
+- [Composer](https://getcomposer.org/).
+- Node.js 20+ and npm.
+- [Docker](https://www.docker.com/) to run the development PostgreSQL instance.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Getting started (local)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+```sh
+# 1. PHP dependencies
+composer install
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+# 2. Environment file
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Point the database settings in `.env` at the development container (see
+[Development database](#development-database-docker)):
 
-## Contributing
+```dotenv
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5434
+DB_DATABASE=clarif
+DB_USERNAME=clarif
+DB_PASSWORD=secret
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+QUEUE_CONNECTION=database
+```
 
-## Code of Conduct
+Then run the migrations and build the frontend assets:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```sh
+php artisan migrate
 
-## Security Vulnerabilities
+npm install
+npm run build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Start the app, Vite, and the queue worker together:
+
+```sh
+composer dev
+```
+
+## Development database (Docker)
+
+The local PostgreSQL instance runs as a single Docker container (no `docker-compose.yml` yet; that
+comes in Phase 6):
+
+```sh
+docker run -d --name clarif-postgres \
+  -e POSTGRES_DB=clarif \
+  -e POSTGRES_USER=clarif \
+  -e POSTGRES_PASSWORD=secret \
+  -p 5434:5432 \
+  -v clarif-postgres-data:/var/lib/postgresql/data \
+  --restart unless-stopped \
+  postgres:16-alpine
+```
+
+Notes:
+
+- The container is exposed on host port **5434** (not the default 5432) to avoid clashing with a
+  locally installed PostgreSQL service.
+- Data is kept in the named volume `clarif-postgres-data`.
+- Stop / start it with `docker stop clarif-postgres` and `docker start clarif-postgres`.
+
+## Queues
+
+Background jobs use the `database` queue driver (no Redis). The `jobs`, `job_batches`, and
+`failed_jobs` tables ship with the default migrations, and `QUEUE_CONNECTION=database` is set in
+`.env`. To process jobs:
+
+```sh
+php artisan queue:work
+```
+
+## Common commands
+
+| Command | Description |
+| --- | --- |
+| `composer install` | Install PHP dependencies. |
+| `composer dev` | Run the app server, Vite, the queue worker, and logs together. |
+| `composer test` | Clear config and run the PHPUnit test suite. |
+| `npm run dev` | Start Vite in watch mode. |
+| `npm run build` | Compile Tailwind/Vite assets. |
+| `php artisan migrate` | Run pending migrations. |
+| `php artisan migrate:fresh` | Drop all tables and re-run migrations. |
+| `php artisan queue:work` | Process queued jobs. |
+| `php artisan test` | Run the test suite (PHPUnit). |
+| `vendor/bin/phpunit` | Run PHPUnit directly. |
+
+## Technical decisions
+
+- **SARIF only.** It is the single supported input format.
+- **Streaming parsing.** Reports are read with
+  [`halaxa/json-machine`](https://github.com/halaxa/json-machine) using generators, never a full
+  `json_decode`, and findings are inserted in batches of about 500 rows.
+- **PostgreSQL with JSONB.** The raw SARIF finding is stored as-is in a `payload` JSONB column;
+  `codeFlows` is not normalized into relational tables.
+- **Database queue.** `database` driver instead of Redis.
+- **Severity enum.** SARIF `level` is normalized to an app-owned severity enum, falling back to
+  `warning`.
+
+## v1 scope
+
+- Only `runs[0]` of each SARIF file is processed (one run per file).
+- `codeFlows` is preserved inside `payload` but not normalized.
+- Diffing groups findings by a fingerprint of `rule_id | file_path | line`. The known
+  **"line drift problem"** (line numbers shifting when unrelated code is added or removed above a
+  finding) is documented as a conscious v1 limitation, not a bug.
+
+## Roadmap
+
+| Phase | Scope | Status |
+| --- | --- | --- |
+| 0 | Bootstrap: Boost, `halaxa/json-machine`, PostgreSQL, queue | Done |
+| 1 | Data model: `reports`, `findings`, severity enum, models, factories | Pending |
+| 2 | Ingestion: upload endpoint, streaming parse job, batching | Pending |
+| 3 | Query UI: report list, upload form, findings table with filters | Pending |
+| 4 | Run diffing: new / fixed / persistent | Pending |
+| 5 | Tests and SARIF fixtures | Pending |
+| 6 | Dockerization for distribution (`docker compose up --build`) | Pending |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Released under the [MIT license](https://opensource.org/licenses/MIT).

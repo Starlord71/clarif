@@ -21,8 +21,8 @@ vendor/bin/phpunit tests/Unit/FooTest.php
 php artisan migrate:fresh
 ```
 
-Laravel Boost is not installed yet. Install it before making application changes
-(`composer require laravel/boost --dev && php artisan boost:install`); it regenerates this file.
+Laravel Boost is installed (`laravel/boost`) with guideline injection disabled, so this file is
+maintained by hand.
 
 ## Target architecture (decided, mostly not implemented)
 
@@ -43,10 +43,11 @@ Laravel Boost is not installed yet. Install it before making application changes
 
 ## Gotchas
 
-- Windows + Laragon; the PHP CLI on PATH is Laragon's PHP 8.4. `pdo_pgsql` / `pgsql` are NOT
-  enabled by default, so enable them in the Laragon PHP `php.ini` before working against Postgres.
-- `.env` uses SQLite today and `phpunit.xml` uses SQLite `:memory:`. The Postgres switch is
-  planned, not done. Do not switch config preemptively.
+- Windows + Laragon; the PHP CLI on PATH is Laragon's PHP 8.4. `pdo_pgsql` / `pgsql` are now
+  enabled in the Laragon PHP `php.ini` (original backed up as `php.ini.bak-clarif-phase0`).
+- Development database: Docker container `clarif-postgres` (`postgres:16-alpine`, named volume
+  `clarif-postgres-data`) on host port `5434`, database/user `clarif`. `.env` points to it.
+- `phpunit.xml` still uses SQLite `:memory:`. Do not switch test config preemptively.
 - Do not commit or push unless explicitly asked.
 
 ## Workflow
