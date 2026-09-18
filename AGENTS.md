@@ -39,6 +39,7 @@ Laravel Boost is not installed yet. Install it before making application changes
 
 - Code comments are always English PHPDoc. Documentation is bilingual (Spanish and English).
 - Never use emojis anywhere (code, docs, commits, replies).
+- Always reply with the word "Gabagool" (the phrase from The Sopranos).
 
 ## Gotchas
 
