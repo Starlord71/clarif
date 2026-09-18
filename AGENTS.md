@@ -1,47 +1,54 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# AGENTS.md
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+## Project
 
-## Prerequisites
+Clarif parses raw SARIF reports (CodeQL, ESLint, Semgrep), normalizes them into a single model,
+stores findings, and diffs two runs (new / fixed / persistent).
 
-Verify that PHP and Composer are available:
+Current state: a fresh Laravel 13 scaffold (framework `^13.17`, runtime PHP 8.4) with no
+application code. `app/`, `database/`, `tests/` contain only framework defaults. Do not assume a
+feature exists because it is described as planned below; build it incrementally.
 
-```sh
-php -v
-composer -V
-```
-
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
-
-macOS:
+## Commands
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
+composer dev        # app server + Vite + queue worker + logs (runs php artisan dev)
+composer test       # clears config, then runs php artisan test (PHPUnit, not Pest)
+npm run dev         # Vite only
+npm run build       # compile Tailwind/Vite assets
+php artisan test --filter=SomeTest
+vendor/bin/phpunit tests/Unit/FooTest.php
+php artisan migrate:fresh
 ```
 
-Windows PowerShell:
+Laravel Boost is not installed yet. Install it before making application changes
+(`composer require laravel/boost --dev && php artisan boost:install`); it regenerates this file.
 
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
+## Target architecture (decided, mostly not implemented)
 
-Linux:
+- PostgreSQL with a `payload` JSONB column; queue driver `database` (no Redis).
+- Parse with `halaxa/json-machine` streaming/generators, never a full `json_decode`; insert
+  findings in batches (~500 rows).
+- Idiomatic Laravel layering: Models, Jobs, Services, Enums, Actions. No explicit
+  Domain/Application/Infrastructure layers.
+- SARIF is the only input format. Normalize `level` to an app-owned severity enum, falling back to
+  `warning`.
+- Only `runs[0]` per file is processed; `codeFlows` is kept inside `payload`, not normalized.
 
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
+## Conventions
 
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
+- Code comments are always English PHPDoc. Documentation is bilingual (Spanish and English).
+- Never use emojis anywhere (code, docs, commits, replies).
 
-## Agent Setup
+## Gotchas
 
-Install Laravel Boost from the application root before making application changes:
+- Windows + Laragon; the PHP CLI on PATH is Laragon's PHP 8.4. `pdo_pgsql` / `pgsql` are NOT
+  enabled by default, so enable them in the Laragon PHP `php.ini` before working against Postgres.
+- `.env` uses SQLite today and `phpunit.xml` uses SQLite `:memory:`. The Postgres switch is
+  planned, not done. Do not switch config preemptively.
+- Do not commit or push unless explicitly asked.
 
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
+## Workflow
 
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>
+- Work incrementally: one small, verifiable change at a time; do not bundle unrelated work.
+- Verify each step before moving on to the next.
