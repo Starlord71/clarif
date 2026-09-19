@@ -10,9 +10,8 @@ It is a single-user tool (no authentication) built with Laravel 13 and PostgreSQ
 
 ## Status
 
-The project is built in phases. **Phases 0 to 2 are complete**: bootstrap, the data model, and the
-ingestion pipeline (upload endpoint plus a streaming parse job). The query UI and diffing are not
-implemented yet. See the [roadmap](#roadmap).
+Uploading and parsing SARIF reports into a normalized, queryable model is implemented. The query UI
+and the run diffing are still in progress.
 
 ## Requirements
 
@@ -128,18 +127,6 @@ php artisan queue:work
 - Diffing groups findings by a fingerprint of `rule_id | file_path | line`. The known
   **"line drift problem"** (line numbers shifting when unrelated code is added or removed above a
   finding) is documented as a conscious v1 limitation, not a bug.
-
-## Roadmap
-
-| Phase | Scope | Status |
-| --- | --- | --- |
-| 0 | Bootstrap: Boost, `halaxa/json-machine`, PostgreSQL, queue | Done |
-| 1 | Data model: `reports`, `findings`, severity enum, models, factories | Done |
-| 2 | Ingestion: upload endpoint, streaming parse job, batching | Done |
-| 3 | Query UI: report list, upload form, findings table with filters | Pending |
-| 4 | Run diffing: new / fixed / persistent | Pending |
-| 5 | Tests and SARIF fixtures | Pending |
-| 6 | Dockerization for distribution (`docker compose up --build`) | Pending |
 
 ## License
 

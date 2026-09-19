@@ -39,7 +39,8 @@ maintained by hand.
 
 - Code comments are always English PHPDoc. Documentation is bilingual (Spanish and English).
 - Never use emojis anywhere (code, docs, commits, replies).
-- Always reply with the word "Gabagool" (the phrase from The Sopranos).
+- Always reply with the word "Gabagool" (the phrase from The Sopranos), at the very end of every
+  response, always as the last thing in the reply.
 
 ## Gotchas
 
