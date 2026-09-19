@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\ReportRepositoryInterface;
 use App\Enums\ReportStatus;
 use App\Jobs\ParseSarifReportJob;
-use App\Models\Report;
 use App\Rules\ValidSarifFile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +20,11 @@ use Illuminate\Support\Str;
  */
 class ReportUploadController extends Controller
 {
+    /**
+     * Inject the report persistence contract.
+     */
+    public function __construct(private readonly ReportRepositoryInterface $reports) {}
+
     /**
      * Show the SARIF upload form.
      */
@@ -53,7 +58,7 @@ class ReportUploadController extends Controller
         // Store with a random name and a neutral, non-executable extension.
         $storedPath = $file->storeAs('', Str::uuid()->toString().'.json', $disk);
 
-        $report = Report::create([
+        $report = $this->reports->create([
             'original_filename' => mb_substr(basename($file->getClientOriginalName()), 0, 255),
             'tool_name' => config('clarif.unknown_tool_name'),
             'stored_path' => $storedPath,

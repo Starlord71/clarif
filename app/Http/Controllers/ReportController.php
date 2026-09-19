@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\FindingRepositoryInterface;
+use App\Contracts\ReportRepositoryInterface;
 use App\Enums\SarifLevel;
 use App\Models\Report;
 use Illuminate\Contracts\View\View;
@@ -19,6 +21,14 @@ use Illuminate\Support\Facades\Storage;
  */
 class ReportController extends Controller
 {
+    /**
+     * Inject the persistence contracts used by this controller.
+     */
+    public function __construct(
+        private readonly ReportRepositoryInterface $reports,
+        private readonly FindingRepositoryInterface $findingsRepository,
+    ) {}
+
     /**
      * Rows per page offered by the pagination selector.
      */
@@ -46,10 +56,8 @@ class ReportController extends Controller
     {
         $perPage = $this->resolvePerPage($request, 10);
 
-        $reports = Report::query()
-            ->withCount('findings')
-            ->latest('id')
-            ->paginate($perPage)
+        $reports = $this->reports
+            ->paginateLatest($perPage)
             ->withQueryString();
 
         $data = [
@@ -84,12 +92,12 @@ class ReportController extends Controller
         $ruleId = trim((string) $request->query('rule_id', ''));
         $filePath = trim((string) $request->query('file_path', ''));
 
-        $findings = $report->findings()
-            ->when($severity !== '', fn ($query) => $query->where('severity', $severity))
-            ->when($ruleId !== '', fn ($query) => $query->where('rule_id', 'like', '%'.$ruleId.'%'))
-            ->when($filePath !== '', fn ($query) => $query->where('file_path', 'like', '%'.$filePath.'%'))
-            ->orderBy('id')
-            ->paginate($perPage)
+        $findings = $this->findingsRepository
+            ->paginateForReport($report, [
+                'severity' => $severity,
+                'rule_id' => $ruleId,
+                'file_path' => $filePath,
+            ], $perPage)
             ->withQueryString();
 
         $data = [
@@ -141,7 +149,7 @@ class ReportController extends Controller
             Storage::disk(config('clarif.uploads.disk'))->delete($report->stored_path);
         }
 
-        $report->delete();
+        $this->reports->delete($report);
 
         if ($request->expectsJson()) {
             return response()->json(['message' => __('reports.report_deleted')]);
@@ -175,6 +183,6 @@ class ReportController extends Controller
      */
     private function reportNumber(Report $report): int
     {
-        return Report::query()->where('id', '<=', $report->id)->count();
+        return $this->reports->countUpTo($report->id);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\ReportRepositoryInterface;
 use App\Models\Report;
 use App\Services\Sarif\ReportComparisonService;
 use Illuminate\Contracts\View\View;
@@ -14,17 +15,20 @@ use Illuminate\Http\Request;
 class ReportComparisonController extends Controller
 {
     /**
-     * Inject the pure comparison service.
+     * Inject the report repository and the pure comparison service.
      */
-    public function __construct(private readonly ReportComparisonService $comparison) {}
+    public function __construct(
+        private readonly ReportRepositoryInterface $reports,
+        private readonly ReportComparisonService $comparison,
+    ) {}
 
     /**
      * Compare the two reports identified by the base and head query params.
      */
     public function __invoke(Request $request): View|RedirectResponse
     {
-        $base = Report::query()->find($request->integer('base'));
-        $head = Report::query()->find($request->integer('head'));
+        $base = $this->reports->find($request->integer('base'));
+        $head = $this->reports->find($request->integer('head'));
 
         if ($base === null || $head === null || $base->is($head)) {
             return redirect()
@@ -38,8 +42,8 @@ class ReportComparisonController extends Controller
             [$base, $head] = [$head, $base];
         }
 
-        $base->load('findings');
-        $head->load('findings');
+        $base = $this->reports->withFindings($base);
+        $head = $this->reports->withFindings($head);
 
         $comparison = $this->comparison->compare($base, $head);
 
@@ -59,6 +63,6 @@ class ReportComparisonController extends Controller
      */
     private function reportNumber(Report $report): int
     {
-        return Report::query()->where('id', '<=', $report->id)->count();
+        return $this->reports->countUpTo($report->id);
     }
 }

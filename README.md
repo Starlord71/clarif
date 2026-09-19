@@ -132,6 +132,10 @@ php artisan queue:work
 - **Database queue.** `database` driver instead of Redis.
 - **Severity enum.** SARIF `level` is normalized to an app-owned severity enum, falling back to
   `warning`.
+- **Repository pattern.** Controllers and services depend on repository contracts (`app/Contracts`)
+  implemented by Eloquent repositories (`app/Repositories`); all query building lives there and the
+  queue jobs stay thin. See [docs/architecture.md](docs/architecture.md) for the layering and
+  diagrams.
 
 ## v1 scope
 

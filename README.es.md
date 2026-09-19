@@ -133,6 +133,10 @@ php artisan queue:work
 - **Cola en base de datos.** Driver `database` en lugar de Redis.
 - **Enum de severidad.** El `level` de SARIF se normaliza a un enum de severidad propio, con
   fallback a `warning`.
+- **Patrón repositorio.** Controladores y servicios dependen de contratos de repositorio
+  (`app/Contracts`) implementados por repositorios Eloquent (`app/Repositories`); toda la
+  generación de consultas vive ahí y los jobs de cola quedan finos. Ver
+  [docs/architecture.es.md](docs/architecture.es.md) para las capas y los diagramas.
 
 ## Alcance de v1
 
