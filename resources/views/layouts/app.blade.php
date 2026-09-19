@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('title', __('reports.brand')) · {{ __('reports.brand') }}</title>
 
@@ -76,7 +77,8 @@
                 <p class="mt-2 text-sm text-slate-600">{{ __('reports.delete_modal_body') }}</p>
                 <p data-modal-name class="mt-2 truncate text-sm font-medium text-slate-800"></p>
 
-                <form method="POST" data-modal-form class="mt-6 flex justify-end gap-2">
+                <form method="POST" data-modal-form data-error-message="{{ __('reports.delete_failed') }}"
+                      class="mt-6 flex justify-end gap-2">
                     @csrf
                     @method('DELETE')
                     <button type="button" data-modal-cancel
@@ -89,6 +91,37 @@
                     </button>
                 </form>
             </div>
+        </div>
+
+        <div data-modal="finding-detail" role="dialog" aria-modal="true"
+             aria-labelledby="finding-detail-title"
+             class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+            <div class="w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl">
+                <div class="flex items-center justify-between gap-4 bg-indigo-900 px-6 py-4">
+                    <h3 id="finding-detail-title" class="text-lg font-semibold text-white">
+                        {{ __('reports.finding_modal_title') }}
+                    </h3>
+                    <button type="button" data-finding-modal-cancel
+                            aria-label="{{ __('reports.finding_modal_close') }}"
+                            class="rounded-md p-1 text-xl leading-none text-indigo-200 transition hover:bg-white/10 hover:text-white">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div data-finding-detail-body class="max-h-[65vh] overflow-y-auto px-6 py-5"></div>
+
+                <div class="flex justify-end border-t border-slate-200 bg-slate-50 px-6 py-3">
+                    <button type="button" data-finding-modal-cancel
+                            class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+                        {{ __('reports.finding_modal_close') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="app-toast" role="status" aria-live="polite"
+             class="pointer-events-none fixed bottom-4 right-4 z-50 hidden max-w-sm">
+            <div data-toast-body></div>
         </div>
     </body>
 </html>

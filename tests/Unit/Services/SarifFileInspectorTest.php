@@ -69,6 +69,36 @@ class SarifFileInspectorTest extends TestCase
         }
     }
 
+    public function test_it_rejects_a_native_tool_json_as_not_sarif(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'clarif-sarif-');
+        file_put_contents($path, '{"version":"1.176.1","results":[]}');
+
+        try {
+            $this->inspector->assertSupportedVersion($path);
+            $this->fail('Expected a SarifParsingException for a native tool export.');
+        } catch (SarifParsingException $e) {
+            $this->assertSame(ReportFailureReason::NotSarif, $e->reason);
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    public function test_it_rejects_a_versionless_document_without_runs_as_not_sarif(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'clarif-sarif-');
+        file_put_contents($path, '{"@programName":"ZAP","site":[]}');
+
+        try {
+            $this->inspector->assertSupportedVersion($path);
+            $this->fail('Expected a SarifParsingException for a non-SARIF document.');
+        } catch (SarifParsingException $e) {
+            $this->assertSame(ReportFailureReason::NotSarif, $e->reason);
+        } finally {
+            @unlink($path);
+        }
+    }
+
     public function test_it_rejects_a_valid_header_with_a_malformed_body(): void
     {
         $path = tempnam(sys_get_temp_dir(), 'clarif-sarif-');

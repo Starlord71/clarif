@@ -39,6 +39,7 @@ return [
     'delete_confirm_yes' => 'Yes, delete',
     'delete_cancel' => 'Cancel',
     'report_deleted' => 'The report was deleted successfully.',
+    'delete_failed' => 'The report could not be deleted. Please try again.',
 
     // Status and severity labels (used by the enums' label() methods).
     'statuses' => [
@@ -63,9 +64,9 @@ return [
     'upload_choose_file' => 'Choose file',
     'upload_no_file' => 'No file selected',
     'upload_submit' => 'Upload and parse',
-    'upload_formats_hint' => 'Accepted formats: .sarif, .json. Maximum size: :size MB.',
+    'upload_formats_hint' => 'Accepted formats: .sarif or .json in SARIF 2.1.0 format. Maximum size: :size MB.',
     'upload_tips_title' => 'Before you upload',
-    'upload_tip_one' => 'The file must declare SARIF version 2.1.0.',
+    'upload_tip_one' => 'The file must be a SARIF 2.1.0 document. Native JSON exports from tools such as Semgrep or ZAP are not accepted.',
     'upload_tip_two' => 'Only the first run (runs[0]) of the file is processed.',
     'upload_tip_three' => 'Parsing runs in the background; the status updates on the report page.',
     'back_to_reports' => 'Back to reports',
@@ -103,6 +104,9 @@ return [
     'column_line' => 'Line',
     'column_message' => 'Message',
     'value_unknown' => '-',
+    'findings_view_detail' => 'View details',
+    'finding_modal_title' => 'Finding details',
+    'finding_modal_close' => 'Close',
 
     // Pagination.
     'per_page_label' => 'Per page',

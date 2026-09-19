@@ -44,6 +44,21 @@ class SarifParsingException extends RuntimeException
     }
 
     /**
+     * Build an exception for valid JSON that is not a SARIF document.
+     *
+     * Native tool exports (for example Semgrep or ZAP JSON) decode correctly
+     * but lack the SARIF-specific top-level shape, so they are reported as a
+     * format problem rather than an unsupported version.
+     */
+    public static function notSarif(string $technicalMessage = ''): self
+    {
+        return new self(
+            ReportFailureReason::NotSarif,
+            $technicalMessage !== '' ? $technicalMessage : 'Document is not a SARIF report.',
+        );
+    }
+
+    /**
      * Build an exception for an unsupported SARIF version.
      */
     public static function unsupportedVersion(?string $version = null): self

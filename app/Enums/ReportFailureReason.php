@@ -12,6 +12,7 @@ enum ReportFailureReason: string
 {
     case InvalidJson = 'invalid_json';
     case MissingRuns = 'missing_runs';
+    case NotSarif = 'not_sarif';
     case UnsupportedVersion = 'unsupported_version';
     case Unknown = 'unknown';
 

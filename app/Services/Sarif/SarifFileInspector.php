@@ -68,12 +68,23 @@ final class SarifFileInspector
         }
 
         $version = is_array($decoded) ? ($decoded['version'] ?? null) : null;
+        $hasRuns = is_array($decoded) && array_key_exists('runs', $decoded) && is_array($decoded['runs']);
 
-        if (! is_string($version) || $version !== config('clarif.supported_sarif_version')) {
-            throw SarifParsingException::unsupportedVersion(
-                is_string($version) ? $version : null,
+        if (is_string($version) && $version === config('clarif.supported_sarif_version')) {
+            return;
+        }
+
+        // Valid JSON without a top-level "runs" array is a native tool export
+        // (e.g. Semgrep or ZAP JSON), not a SARIF document at all.
+        if (! $hasRuns) {
+            throw SarifParsingException::notSarif(
+                'JSON document has no top-level "runs" array (not SARIF).',
             );
         }
+
+        throw SarifParsingException::unsupportedVersion(
+            is_string($version) ? $version : null,
+        );
     }
 
     /**

@@ -18,6 +18,8 @@ Route::post('/reports', [ReportUploadController::class, 'store'])
     ->middleware('throttle:20,1')
     ->name('reports.store');
 
+Route::get('/reports/{report}/status', [ReportController::class, 'status'])->name('reports.status');
+
 Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
 
 Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');

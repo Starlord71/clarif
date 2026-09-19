@@ -96,6 +96,26 @@ class ReportUploadTest extends TestCase
         Queue::assertNothingPushed();
     }
 
+    public function test_the_upload_rejects_a_native_tool_json_that_is_not_sarif(): void
+    {
+        Queue::fake();
+        Storage::fake('sarif');
+
+        $file = UploadedFile::fake()->createWithContent(
+            'semgrep-report.json',
+            (string) file_get_contents(base_path('tests/Fixtures/sarif/native-tool-report.json')),
+        );
+
+        $response = $this->from('/')->post(route('reports.store'), ['report' => $file]);
+
+        $response->assertSessionHasErrors([
+            'report' => ReportFailureReason::NotSarif->label(),
+        ]);
+        $this->assertSame(0, Report::count());
+        Queue::assertNothingPushed();
+        $this->assertSame([], Storage::disk('sarif')->allFiles());
+    }
+
     public function test_the_upload_rejects_an_unsupported_sarif_version_before_persisting(): void
     {
         Queue::fake();

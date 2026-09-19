@@ -19,4 +19,14 @@ enum ReportStatus: string
     {
         return __('reports.statuses.'.$this->value);
     }
+
+    /**
+     * Determine whether the report has reached a final state.
+     *
+     * Terminal reports never change again, so the UI can stop polling them.
+     */
+    public function isTerminal(): bool
+    {
+        return in_array($this, [self::Completed, self::Failed], true);
+    }
 }

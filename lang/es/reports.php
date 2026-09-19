@@ -23,7 +23,7 @@ return [
     'reports_title' => 'Reportes',
     'reports_subtitle' => 'Todos los reportes SARIF ingeridos por Clarif.',
     'reports_empty' => 'Todavía no hay reportes.',
-    'reports_empty_hint' => 'Subí tu primer archivo SARIF para empezar.',
+    'reports_empty_hint' => 'Sube tu primer archivo SARIF para empezar.',
     'upload_report' => 'Subir reporte',
     'column_number' => 'N°',
     'column_file' => 'Archivo',
@@ -35,10 +35,11 @@ return [
     'action_view' => 'Ver',
     'action_delete' => 'Eliminar',
     'delete_modal_title' => 'Eliminar reporte',
-    'delete_modal_body' => '¿Seguro que querés eliminar este reporte? Se van a borrar todos sus hallazgos. Esta acción no se puede deshacer.',
+    'delete_modal_body' => '¿Seguro que quieres eliminar este reporte? Se van a borrar todos sus hallazgos. Esta acción no se puede deshacer.',
     'delete_confirm_yes' => 'Sí, eliminar',
     'delete_cancel' => 'Cancelar',
     'report_deleted' => 'El reporte se eliminó correctamente.',
+    'delete_failed' => 'No se pudo eliminar el reporte. Intenta de nuevo.',
 
     // Etiquetas de estado y severidad (usadas por los métodos label() de los enums).
     'statuses' => [
@@ -58,14 +59,14 @@ return [
     // Formulario de subida.
     'upload_title' => 'Subir reporte SARIF',
     'upload_heading' => 'Subir un reporte SARIF',
-    'upload_description' => 'Seleccioná un archivo .sarif o .json exportado por CodeQL, ESLint o Semgrep. Clarif lo procesa en segundo plano y normaliza sus hallazgos.',
+    'upload_description' => 'Selecciona un archivo .sarif o .json exportado por CodeQL, ESLint o Semgrep. Clarif lo procesa en segundo plano y normaliza sus hallazgos.',
     'upload_field_label' => 'Archivo SARIF',
     'upload_choose_file' => 'Elegir archivo',
     'upload_no_file' => 'Ningún archivo seleccionado',
     'upload_submit' => 'Subir y procesar',
-    'upload_formats_hint' => 'Formatos aceptados: .sarif, .json. Tamaño máximo: :size MB.',
+    'upload_formats_hint' => 'Formatos aceptados: .sarif o .json en formato SARIF 2.1.0. Tamaño máximo: :size MB.',
     'upload_tips_title' => 'Antes de subir',
-    'upload_tip_one' => 'El archivo debe declarar la versión 2.1.0 de SARIF.',
+    'upload_tip_one' => 'El archivo debe ser un documento SARIF 2.1.0. Las salidas JSON nativas de herramientas como Semgrep o ZAP no se aceptan.',
     'upload_tip_two' => 'Solo se procesa el primer run (runs[0]) del archivo.',
     'upload_tip_three' => 'El procesamiento corre en segundo plano; el estado se actualiza en la página del reporte.',
     'back_to_reports' => 'Volver a reportes',
@@ -103,6 +104,9 @@ return [
     'column_line' => 'Línea',
     'column_message' => 'Mensaje',
     'value_unknown' => '-',
+    'findings_view_detail' => 'Ver detalle',
+    'finding_modal_title' => 'Detalle del hallazgo',
+    'finding_modal_close' => 'Cerrar',
 
     // Paginación.
     'per_page_label' => 'Por página',

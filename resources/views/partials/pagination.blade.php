@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('reports.pagination_navigation') }}"
+    <nav role="navigation" aria-label="{{ __('reports.pagination_navigation') }}" data-pagination
          class="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <p class="text-sm text-slate-500">
             {{ __('reports.pagination_summary', [
