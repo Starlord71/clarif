@@ -2,13 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Contracts\FindingRepositoryInterface;
 use App\Enums\ReportFailureReason;
 use App\Enums\ReportStatus;
 use App\Enums\SarifLevel;
 use App\Jobs\ParseSarifReportJob;
 use App\Models\Report;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 use Tests\TestCase;
 
 /**
@@ -20,8 +23,10 @@ class ParseSarifReportJobTest extends TestCase
 
     /**
      * Store a fixture as an upload and run the job synchronously.
+     *
+     * @param  callable|null  $beforeDispatch  Hook to prepare the container before the job runs.
      */
-    private function parseFixture(string $fixture): Report
+    private function parseFixture(string $fixture, ?callable $beforeDispatch = null): Report
     {
         Storage::fake('sarif');
 
@@ -33,6 +38,10 @@ class ParseSarifReportJobTest extends TestCase
             'tool_name' => 'unknown',
             'status' => ReportStatus::Pending,
         ]);
+
+        if ($beforeDispatch !== null) {
+            $beforeDispatch($report);
+        }
 
         ParseSarifReportJob::dispatchSync($report, $path);
 
@@ -87,5 +96,40 @@ class ParseSarifReportJobTest extends TestCase
 
         $this->assertSame(ReportStatus::Failed, $report->status);
         $this->assertSame(ReportFailureReason::UnsupportedVersion->label(), $report->error_message);
+    }
+
+    public function test_a_native_tool_export_is_reported_as_not_sarif(): void
+    {
+        $report = $this->parseFixture('native-tool-report.json');
+
+        $this->assertSame(ReportStatus::Failed, $report->status);
+        $this->assertSame(ReportFailureReason::NotSarif->label(), $report->error_message);
+        $this->assertSame(ReportFailureReason::NotSarif->value, $report->meta['failure_reason']);
+        $this->assertSame(0, $report->findings()->count());
+    }
+
+    public function test_an_unexpected_error_is_categorized_as_unknown(): void
+    {
+        $report = $this->parseFixture('eslint-style.sarif', function (): void {
+            $this->app->instance(FindingRepositoryInterface::class, new class implements FindingRepositoryInterface
+            {
+                public function paginateForReport(Report $report, array $filters, int $perPage): LengthAwarePaginator
+                {
+                    throw new RuntimeException('Not used in this test.');
+                }
+
+                public function insertBatch(array $rows): void
+                {
+                    throw new RuntimeException('Unexpected storage failure.');
+                }
+
+                public function deleteForReport(Report $report): void {}
+            });
+        });
+
+        $this->assertSame(ReportStatus::Failed, $report->status);
+        $this->assertSame(ReportFailureReason::Unknown->label(), $report->error_message);
+        $this->assertSame(ReportFailureReason::Unknown->value, $report->meta['failure_reason']);
+        $this->assertSame(0, $report->findings()->count());
     }
 }

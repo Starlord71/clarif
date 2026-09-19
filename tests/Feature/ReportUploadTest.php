@@ -134,4 +134,22 @@ class ReportUploadTest extends TestCase
         $this->assertSame(0, Report::count());
         Queue::assertNothingPushed();
     }
+
+    public function test_the_upload_endpoint_is_throttled(): void
+    {
+        Queue::fake();
+        Storage::fake('sarif');
+
+        $contents = (string) file_get_contents(base_path('tests/Fixtures/sarif/eslint-style.sarif'));
+
+        for ($i = 0; $i < 20; $i++) {
+            $file = UploadedFile::fake()->createWithContent('eslint-style.sarif', $contents);
+
+            $this->post(route('reports.store'), ['report' => $file])->assertRedirect();
+        }
+
+        $file = UploadedFile::fake()->createWithContent('eslint-style.sarif', $contents);
+
+        $this->post(route('reports.store'), ['report' => $file])->assertStatus(429);
+    }
 }
