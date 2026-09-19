@@ -50,17 +50,22 @@ return [
         'failed' => 'Failed',
     ],
 
+    // SARIF defines abstract levels (error, warning, note, none); these are
+    // the app-owned, business-friendly labels Clarif shows instead.
     'severities' => [
-        'error' => 'Error',
-        'warning' => 'Warning',
-        'note' => 'Note',
-        'none' => 'None',
+        'error' => 'High',
+        'warning' => 'Medium',
+        'note' => 'Low',
+        'none' => 'Info',
     ],
+
+    // Tooltip on severity badges, exposing the original SARIF level.
+    'severity_raw' => 'SARIF level: :level',
 
     // Upload form.
     'upload_title' => 'Upload SARIF report',
     'upload_heading' => 'Upload a SARIF report',
-    'upload_description' => 'Select a .sarif or .json file exported by CodeQL, ESLint, or Semgrep. Clarif parses it in the background and normalizes its findings.',
+    'upload_description' => 'Select a .sarif or .json file in SARIF 2.1.0 format, for example exported by CodeQL, ESLint, Semgrep, or OWASP ZAP. Clarif parses it in the background and normalizes its findings.',
     'upload_field_label' => 'SARIF file',
     'upload_choose_file' => 'Choose file',
     'upload_no_file' => 'No file selected',

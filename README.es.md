@@ -12,15 +12,40 @@ Es una herramienta de un solo usuario (sin autenticación), construida con Larav
 
 La subida y el parsing de reportes SARIF a un modelo normalizado y consultable está implementado,
 junto con la UI de consulta y los filtros de hallazgos por reporte. La comparación de dos ejecuciones
-(hallazgos nuevos, resueltos y persistentes) también está implementada. El trabajo restante es la
-distribución con Docker.
+(hallazgos nuevos, resueltos y persistentes) también está implementada. Hay una distribución con
+Docker que levanta todo (app, PostgreSQL y worker de cola) con un solo comando.
 
 ## Requisitos
 
-- PHP 8.3+ (desarrollado con 8.4) con las extensiones `pdo_pgsql` y `pgsql` habilitadas.
+- PHP 8.4+ (requerido por las dependencias Symfony 8.x fijadas en el lock) con las extensiones
+  `pdo_pgsql` y `pgsql` habilitadas.
 - [Composer](https://getcomposer.org/).
 - Node.js 20+ y npm.
-- [Docker](https://www.docker.com/) para levantar la instancia de PostgreSQL de desarrollo.
+- [Docker](https://www.docker.com/) con Compose para levantar todo el stack o solo la instancia de
+  PostgreSQL de desarrollo.
+
+## Primeros pasos (Docker, recomendado)
+
+Con Docker corriendo, un solo comando construye las imágenes y arranca la aplicación, PostgreSQL y el
+worker de cola:
+
+```sh
+docker compose up --build
+```
+
+Después abrí [http://localhost:8000](http://localhost:8000) y subí un archivo SARIF. No hace falta
+configurar nada a mano: los contenedores esperan a PostgreSQL, corren las migraciones y el worker
+procesa las subidas en segundo plano.
+
+- La configuración vive en el archivo committeado [`.env.docker`](.env.docker). Contiene **valores
+  de demo/local** (incluyendo un `APP_KEY` no secreto y credenciales de base de datos) y no debe
+  reutilizarse en un despliegue de producción real.
+- `APP_DEBUG=false` está puesto a propósito, así las páginas de error nunca filtran trazas.
+- Los datos se guardan en volúmenes nombrados: `postgres-data` (base de datos), `app-storage`
+  (archivos SARIF subidos, compartidos por la app y el worker) y `app-logs` (logs de la aplicación y
+  del canal `sarif`). Detener el stack con `docker compose down` los conserva; `docker compose up`
+  vuelve a levantar todo.
+- Para borrar todos los datos, corré `docker compose down -v`.
 
 ## Primeros pasos (local)
 
@@ -62,10 +87,11 @@ Levantá la app, Vite y el worker de cola juntos:
 composer dev
 ```
 
-## Base de datos de desarrollo (Docker)
+## Base de datos de desarrollo (contenedor único)
 
-La instancia local de PostgreSQL corre como un único contenedor Docker (todavía sin
-`docker-compose.yml`; eso llega en la Fase 6).
+Para desarrollo local contra el código fuente (sin el stack Docker completo), la instancia de
+PostgreSQL corre como un único contenedor Docker. Si usás `docker compose up --build` esto no hace
+falta: el servicio `postgres` del archivo compose provee la base de datos.
 
 La primera vez (cuando el contenedor no existe todavía), créalo:
 
@@ -111,6 +137,9 @@ php artisan queue:work
 
 | Comando | Descripción |
 | --- | --- |
+| `docker compose up --build` | Construye y arranca la app, PostgreSQL y el worker de cola. |
+| `docker compose down` | Detiene el stack (conserva los volúmenes de datos). |
+| `docker compose down -v` | Detiene el stack y borra los volúmenes de datos. |
 | `composer install` | Instala las dependencias de PHP. |
 | `composer dev` | Levanta app, Vite, worker de cola y logs juntos. |
 | `composer test` | Limpia config y corre la suite de PHPUnit. |
@@ -131,14 +160,37 @@ php artisan queue:work
 - **PostgreSQL con JSONB.** El hallazgo SARIF crudo se guarda tal cual en una columna `payload`
   JSONB; `codeFlows` no se normaliza a tablas relacionales.
 - **Cola en base de datos.** Driver `database` en lugar de Redis.
-- **Enum de severidad.** El `level` de SARIF se normaliza a un enum de severidad propio, con
-  fallback a `warning`.
+- **Etiquetas de severidad.** El `level` de SARIF se normaliza a un enum propio y se muestra con una
+  etiqueta más clara, orientada a negocio (Alto/Medio/Bajo/Info), con fallback a `warning` cuando no
+  hay nada declarado.
 - **Patrón repositorio.** Controladores y servicios dependen de contratos de repositorio
   (`app/Contracts`) implementados por repositorios Eloquent (`app/Repositories`); toda la
   generación de consultas vive ahí y los jobs de cola quedan finos. Ver
   [docs/architecture.es.md](docs/architecture.es.md) para las capas y los diagramas.
 
+## Herramientas soportadas y niveles de severidad
+
+Clarif acepta cualquier documento SARIF 2.1.0 válido, así que no está atado a un productor específico.
+Está diseñado y probado con **CodeQL, ESLint, Semgrep y OWASP ZAP**.
+
+SARIF solo define cuatro niveles abstractos. Clarif guarda el valor original (para que siga siendo
+rastreable y esté disponible al pasar el cursor) pero muestra una etiqueta más clara:
+
+| Nivel SARIF | Etiqueta de Clarif | Significado |
+| --- | --- | --- |
+| `error` | Alto | La herramienta marcó un problema definitivo. |
+| `warning` | Medio | Un problema potencial que conviene revisar. |
+| `note` | Bajo | Una observación informativa. |
+| `none` | Info | La herramienta no asignó un nivel. |
+
+La etiqueta se deriva únicamente del nivel SARIF. Los puntajes numéricos más finos, como
+`properties.security-severity` de CodeQL, **no** se interpretan en la v1. Ver
+[docs/scope.es.md](docs/scope.es.md) para el alcance completo.
+
 ## Alcance de v1
+
+Ver [docs/scope.es.md](docs/scope.es.md) para el alcance completo y
+[docs/diffing.es.md](docs/diffing.es.md) para los detalles de la comparación. En resumen:
 
 - Solo se procesa `runs[0]` de cada archivo SARIF (un run por archivo).
 - `codeFlows` se conserva dentro de `payload` pero no se normaliza.

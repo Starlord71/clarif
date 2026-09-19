@@ -15,7 +15,7 @@
             <h2 class="text-xl font-semibold text-slate-900">{{ __('about.tools_title') }}</h2>
             <p class="mt-2 text-slate-600">{{ __('about.tools_intro') }}</p>
 
-            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                     <h3 class="font-medium text-slate-800">CodeQL</h3>
                     <p class="mt-1 text-sm text-slate-600">{{ __('about.tools_codeql') }}</p>
@@ -28,7 +28,46 @@
                     <h3 class="font-medium text-slate-800">Semgrep</h3>
                     <p class="mt-1 text-sm text-slate-600">{{ __('about.tools_semgrep') }}</p>
                 </div>
+                <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 class="font-medium text-slate-800">OWASP ZAP</h3>
+                    <p class="mt-1 text-sm text-slate-600">{{ __('about.tools_zap') }}</p>
+                </div>
             </div>
+        </section>
+
+        <section class="mt-10">
+            <h2 class="text-xl font-semibold text-slate-900">{{ __('about.severity_title') }}</h2>
+            <p class="mt-2 text-slate-600">{{ __('about.severity_intro') }}</p>
+
+            <div class="mt-4 overflow-hidden rounded-lg border border-slate-200 shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left font-medium text-slate-500">{{ __('about.severity_column_sarif') }}</th>
+                            <th class="px-4 py-2 text-left font-medium text-slate-500">{{ __('about.severity_column_label') }}</th>
+                            <th class="px-4 py-2 text-left font-medium text-slate-500">{{ __('about.severity_column_meaning') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white text-slate-600">
+                        @foreach ([
+                            'error' => 'severity_error_meaning',
+                            'warning' => 'severity_warning_meaning',
+                            'note' => 'severity_note_meaning',
+                            'none' => 'severity_none_meaning',
+                        ] as $level => $meaning)
+                            <tr>
+                                <td class="px-4 py-2 font-mono text-xs text-slate-400">{{ $level }}</td>
+                                <td class="px-4 py-2">
+                                    <x-severity-badge :severity="\App\Enums\SarifLevel::from($level)" />
+                                </td>
+                                <td class="px-4 py-2">{{ __('about.'.$meaning) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="mt-3 text-sm text-slate-500">{{ __('about.severity_caveat') }}</p>
         </section>
 
         <section class="mt-10">

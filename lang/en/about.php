@@ -17,10 +17,22 @@ return [
     'intro_2' => 'Every tool used to invent its own output format. SARIF gives them a common language: Clarif reads that single format, so you do not need to write a different adapter for each tool.',
 
     'tools_title' => 'Which tools does Clarif support?',
-    'tools_intro' => 'Clarif accepts any valid SARIF 2.1.0 document. These three tools are the ones it is designed and tested around:',
+    'tools_intro' => 'Clarif accepts any valid SARIF 2.1.0 document. These tools are the ones it is designed and tested around:',
     'tools_codeql' => 'GitHub\'s semantic code analysis engine. It reports security and quality issues with explicit severity levels.',
     'tools_eslint' => 'The JavaScript and TypeScript linter. It usually expresses severity through each rule\'s default configuration, which Clarif resolves automatically.',
     'tools_semgrep' => 'A lightweight, multi-language static analysis tool used for security checks and custom rules.',
+    'tools_zap' => 'OWASP ZAP, the web application security scanner. It exports SARIF and reports all four severity levels.',
+
+    'severity_title' => 'How are severity levels interpreted?',
+    'severity_intro' => 'SARIF only defines four abstract levels, which say little on their own. Clarif translates them into a clearer scale, while keeping the original level available on hover:',
+    'severity_column_sarif' => 'SARIF level',
+    'severity_column_label' => 'Clarif label',
+    'severity_column_meaning' => 'Meaning',
+    'severity_error_meaning' => 'The tool flagged a definite problem.',
+    'severity_warning_meaning' => 'A potential problem worth reviewing.',
+    'severity_note_meaning' => 'An informational observation.',
+    'severity_none_meaning' => 'The tool did not assign a level.',
+    'severity_caveat' => 'The label is derived from the SARIF level only. Some tools, such as CodeQL, also carry a finer numeric risk score in rule.properties.security-severity; Clarif does not interpret it in this version.',
 
     'scope_title' => 'How Clarif interprets a report',
     'scope_intro' => 'A few deliberate scope rules keep ingestion predictable and fast. They are known limitations, not bugs:',

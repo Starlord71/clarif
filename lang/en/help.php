@@ -17,7 +17,7 @@ return [
 
     'workflow_title' => 'How the workflow works',
     'workflow_intro' => 'Clarif works in three simple steps:',
-    'workflow_step_one' => 'You upload a SARIF 2.1.0 file exported by CodeQL, ESLint, or Semgrep.',
+    'workflow_step_one' => 'You upload a SARIF 2.1.0 file exported by a tool such as CodeQL, ESLint, Semgrep, or OWASP ZAP.',
     'workflow_step_two' => 'Clarif parses the file in the background and stores every finding in a normalized form.',
     'workflow_step_three' => 'In the listing you select two reports and compare them.',
 

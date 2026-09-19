@@ -50,17 +50,22 @@ return [
         'failed' => 'Fallido',
     ],
 
+    // Etiquetas de negocio que Clarif muestra en lugar de los niveles
+    // abstractos de SARIF (error, warning, note, none).
     'severities' => [
-        'error' => 'Error',
-        'warning' => 'Advertencia',
-        'note' => 'Nota',
-        'none' => 'Ninguna',
+        'error' => 'Alto',
+        'warning' => 'Medio',
+        'note' => 'Bajo',
+        'none' => 'Info',
     ],
+
+    // Tooltip de los badges de severidad, exponiendo el nivel SARIF original.
+    'severity_raw' => 'Nivel SARIF: :level',
 
     // Formulario de subida.
     'upload_title' => 'Subir reporte SARIF',
     'upload_heading' => 'Subir un reporte SARIF',
-    'upload_description' => 'Selecciona un archivo .sarif o .json exportado por CodeQL, ESLint o Semgrep. Clarif lo procesa en segundo plano y normaliza sus hallazgos.',
+    'upload_description' => 'Selecciona un archivo .sarif o .json en formato SARIF 2.1.0, por ejemplo exportado por CodeQL, ESLint, Semgrep u OWASP ZAP. Clarif lo procesa en segundo plano y normaliza sus hallazgos.',
     'upload_field_label' => 'Archivo SARIF',
     'upload_choose_file' => 'Elegir archivo',
     'upload_no_file' => 'Ningún archivo seleccionado',

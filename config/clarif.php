@@ -67,11 +67,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Used only to emit a warning when a file comes from an unrecognized
-    | driver. Parsing never depends on this list.
+    | driver. Parsing never depends on this list. Matching is case-insensitive
+    | but exact, so the value must match tool.driver.name (for example,
+    | "Semgrep OSS" rather than "semgrep").
     |
     */
 
-    'known_drivers' => ['codeql', 'eslint', 'semgrep'],
+    'known_drivers' => ['codeql', 'eslint', 'semgrep', 'semgrep oss', 'zap'],
 
     /*
     |--------------------------------------------------------------------------

@@ -12,14 +12,39 @@ It is a single-user tool (no authentication) built with Laravel 13 and PostgreSQ
 
 Uploading and parsing SARIF reports into a normalized, queryable model is implemented, together with
 the query UI and the per-report finding filters. Diffing two runs (new, resolved, and persistent
-findings) is implemented as well. The remaining work is the distributable Docker setup.
+findings) is implemented as well. A one-command Docker setup (app, PostgreSQL, and the queue worker)
+is available for distribution.
 
 ## Requirements
 
-- PHP 8.3+ (developed against 8.4) with the `pdo_pgsql` and `pgsql` extensions enabled.
+- PHP 8.4+ (required by the locked Symfony 8.x dependencies) with the `pdo_pgsql` and `pgsql`
+  extensions enabled.
 - [Composer](https://getcomposer.org/).
 - Node.js 20+ and npm.
-- [Docker](https://www.docker.com/) to run the development PostgreSQL instance.
+- [Docker](https://www.docker.com/) with Compose to run the full stack or just the development
+  PostgreSQL instance.
+
+## Getting started (Docker, recommended)
+
+With Docker running, a single command builds the images and starts the application, PostgreSQL, and
+the queue worker:
+
+```sh
+docker compose up --build
+```
+
+Then open [http://localhost:8000](http://localhost:8000) and upload a SARIF file. No manual setup is
+required: the containers wait for PostgreSQL, run the migrations, and the worker processes uploads
+in the background.
+
+- Configuration lives in the committed [`.env.docker`](.env.docker) file. It holds **demo/local
+  values** (including a non-secret `APP_KEY` and database credentials) and must not be reused for a
+  real production deployment.
+- `APP_DEBUG=false` is set on purpose, so error pages never leak stack traces.
+- Data is persisted in named volumes: `postgres-data` (database), `app-storage` (uploaded SARIF
+  files, shared by the app and the worker), and `app-logs` (application and `sarif` logs). Stopping
+  the stack with `docker compose down` keeps them; `docker compose up` brings everything back.
+- To wipe all data, run `docker compose down -v`.
 
 ## Getting started (local)
 
@@ -61,10 +86,11 @@ Start the app, Vite, and the queue worker together:
 composer dev
 ```
 
-## Development database (Docker)
+## Development database (single container)
 
-The local PostgreSQL instance runs as a single Docker container (no `docker-compose.yml` yet; that
-comes in Phase 6).
+For local development against the source (without the full Docker stack), the PostgreSQL instance
+runs as a single Docker container. When using `docker compose up --build`, this is not needed: the
+`postgres` service of the compose file provides the database.
 
 The first time (the container does not exist yet), create it:
 
@@ -110,6 +136,9 @@ php artisan queue:work
 
 | Command | Description |
 | --- | --- |
+| `docker compose up --build` | Build and start the app, PostgreSQL, and the queue worker. |
+| `docker compose down` | Stop the stack (keeps the data volumes). |
+| `docker compose down -v` | Stop the stack and delete the data volumes. |
 | `composer install` | Install PHP dependencies. |
 | `composer dev` | Run the app server, Vite, the queue worker, and logs together. |
 | `composer test` | Clear config and run the PHPUnit test suite. |
@@ -130,14 +159,36 @@ php artisan queue:work
 - **PostgreSQL with JSONB.** The raw SARIF finding is stored as-is in a `payload` JSONB column;
   `codeFlows` is not normalized into relational tables.
 - **Database queue.** `database` driver instead of Redis.
-- **Severity enum.** SARIF `level` is normalized to an app-owned severity enum, falling back to
-  `warning`.
+- **Severity labels.** SARIF `level` is normalized to an app-owned enum and shown as a clearer,
+  business-friendly label (High/Medium/Low/Info), falling back to `warning` when nothing is declared.
 - **Repository pattern.** Controllers and services depend on repository contracts (`app/Contracts`)
   implemented by Eloquent repositories (`app/Repositories`); all query building lives there and the
   queue jobs stay thin. See [docs/architecture.md](docs/architecture.md) for the layering and
   diagrams.
 
+## Supported tools and severity levels
+
+Clarif accepts any valid SARIF 2.1.0 document, so it is not tied to a specific producer. It is designed
+and tested around **CodeQL, ESLint, Semgrep and OWASP ZAP**.
+
+SARIF only defines four abstract levels. Clarif stores the original value (keeping it traceable and
+available on hover) but displays a clearer label:
+
+| SARIF level | Clarif label | Meaning |
+| --- | --- | --- |
+| `error` | High | The tool flagged a definite problem. |
+| `warning` | Medium | A potential problem worth reviewing. |
+| `note` | Low | An informational observation. |
+| `none` | Info | The tool did not assign a level. |
+
+The label is derived from the SARIF level only. Finer numeric risk scores, such as CodeQL's
+`properties.security-severity`, are **not** interpreted in v1. See
+[docs/scope.md](docs/scope.md) for the full scope and limitations.
+
 ## v1 scope
+
+See [docs/scope.md](docs/scope.md) for the complete scope and [docs/diffing.md](docs/diffing.md) for
+the comparison details. In short:
 
 - Only `runs[0]` of each SARIF file is processed (one run per file).
 - `codeFlows` is preserved inside `payload` but not normalized.
