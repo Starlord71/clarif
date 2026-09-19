@@ -10,8 +10,9 @@ It is a single-user tool (no authentication) built with Laravel 13 and PostgreSQ
 
 ## Status
 
-The project is built in phases. **Phase 0 (bootstrap) is complete**; the data model, ingestion, UI,
-and diffing are not implemented yet. See the [roadmap](#roadmap).
+The project is built in phases. **Phases 0 to 2 are complete**: bootstrap, the data model, and the
+ingestion pipeline (upload endpoint plus a streaming parse job). The query UI and diffing are not
+implemented yet. See the [roadmap](#roadmap).
 
 ## Requirements
 
@@ -133,8 +134,8 @@ php artisan queue:work
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0 | Bootstrap: Boost, `halaxa/json-machine`, PostgreSQL, queue | Done |
-| 1 | Data model: `reports`, `findings`, severity enum, models, factories | Pending |
-| 2 | Ingestion: upload endpoint, streaming parse job, batching | Pending |
+| 1 | Data model: `reports`, `findings`, severity enum, models, factories | Done |
+| 2 | Ingestion: upload endpoint, streaming parse job, batching | Done |
 | 3 | Query UI: report list, upload form, findings table with filters | Pending |
 | 4 | Run diffing: new / fixed / persistent | Pending |
 | 5 | Tests and SARIF fixtures | Pending |

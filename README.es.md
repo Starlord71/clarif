@@ -10,8 +10,9 @@ Es una herramienta de un solo usuario (sin autenticación), construida con Larav
 
 ## Estado
 
-El proyecto se construye por fases. La **Fase 0 (bootstrap) está completa**; el modelo de datos, la
-ingesta, la UI y el diffing todavía no están implementados. Ver el [roadmap](#roadmap).
+El proyecto se construye por fases. Las **Fases 0 a 2 están completas**: bootstrap, el modelo de
+datos y el pipeline de ingesta (endpoint de subida más job de parsing en streaming). La UI de
+consulta y el diffing todavía no están implementados. Ver el [roadmap](#roadmap).
 
 ## Requisitos
 
@@ -134,8 +135,8 @@ php artisan queue:work
 | Fase | Alcance | Estado |
 | --- | --- | --- |
 | 0 | Bootstrap: Boost, `halaxa/json-machine`, PostgreSQL, cola | Completa |
-| 1 | Modelo de datos: `reports`, `findings`, enum de severidad, modelos, factories | Pendiente |
-| 2 | Ingesta: endpoint de subida, job de parsing en streaming, batching | Pendiente |
+| 1 | Modelo de datos: `reports`, `findings`, enum de severidad, modelos, factories | Completa |
+| 2 | Ingesta: endpoint de subida, job de parsing en streaming, batching | Completa |
 | 3 | UI de consulta: listado, formulario de subida, tabla de findings con filtros | Pendiente |
 | 4 | Diffing entre runs: nuevos / resueltos / persistentes | Pendiente |
 | 5 | Tests y fixtures SARIF | Pendiente |
