@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Contenido visible de la página explicativa. Es la versión en lenguaje
-    | simple de docs/scope y docs/diffing.
+    | simple de docs/scope. La comparación de runs vive en la página de ayuda.
     |
     */
 
@@ -28,8 +28,7 @@ return [
     'scope_codeflows' => 'Los flujos de datos (codeFlows) se conservan tal cual dentro de cada hallazgo, pero no se descomponen en registros separados.',
     'scope_severity' => 'La severidad se toma del hallazgo cuando está presente, luego del nivel por defecto de la regla, y finalmente cae a warning.',
 
-    'diffing_title' => 'Comparar dos runs y el problema del desplazamiento de líneas',
-    'diffing_1' => 'Clarif identifica el mismo hallazgo entre dos runs usando una huella construida con su regla, su archivo y su línea estimada. Eso es lo que permite distinguir hallazgos nuevos de los resueltos y los persistentes.',
-    'diffing_2' => 'La limitación es que si cambios no relacionados agregan o quitan líneas por encima de un hallazgo, su número de línea se desplaza y la huella deja de coincidir, aunque el problema sea el mismo. Herramientas como SonarQube resuelven esto con huellas basadas en el contexto de código que rodea al hallazgo. Clarif no lo resuelve en su versión actual; es una limitación conocida y consciente.',
+    'diffing_title' => '¿Y cómo comparo dos runs?',
+    'diffing_intro' => 'La comparación de runs tiene su propia guía, con el detalle de la huella de cada hallazgo y la limitación conocida del desplazamiento de líneas.',
 
 ];

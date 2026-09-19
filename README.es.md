@@ -10,8 +10,10 @@ Es una herramienta de un solo usuario (sin autenticación), construida con Larav
 
 ## Estado
 
-La subida y el parsing de reportes SARIF a un modelo normalizado y consultable está implementado. La
-UI de consulta y el diffing entre runs siguen en progreso.
+La subida y el parsing de reportes SARIF a un modelo normalizado y consultable está implementado,
+junto con la UI de consulta y los filtros de hallazgos por reporte. La comparación de dos ejecuciones
+(hallazgos nuevos, resueltos y persistentes) también está implementada. El trabajo restante es la
+distribución con Docker.
 
 ## Requisitos
 
@@ -63,7 +65,9 @@ composer dev
 ## Base de datos de desarrollo (Docker)
 
 La instancia local de PostgreSQL corre como un único contenedor Docker (todavía sin
-`docker-compose.yml`; eso llega en la Fase 6):
+`docker-compose.yml`; eso llega en la Fase 6).
+
+La primera vez (cuando el contenedor no existe todavía), créalo:
 
 ```sh
 docker run -d --name clarif-postgres \
@@ -76,12 +80,22 @@ docker run -d --name clarif-postgres \
   postgres:16-alpine
 ```
 
+En las siguientes veces el contenedor ya existe, así que solo hay que arrancarlo (no uses de nuevo
+`docker run --name clarif-postgres`, fallaría con `container name already in use`):
+
+```sh
+docker start clarif-postgres
+```
+
 Notas:
 
 - El contenedor se expone en el puerto host **5434** (no en el 5432 por defecto) para no chocar con
   un servicio de PostgreSQL instalado localmente.
-- Los datos se guardan en el volumen nombrado `clarif-postgres-data`.
-- Para detenerlo / arrancarlo: `docker stop clarif-postgres` y `docker start clarif-postgres`.
+- Los datos se guardan en el volumen nombrado `clarif-postgres-data`, así que detener o eliminar el
+  contenedor no los borra; arrancarlo de nuevo reutiliza la misma data.
+- Gracias a `--restart unless-stopped`, el contenedor se inicia automáticamente cuando arranca
+  Docker Desktop, por lo que normalmente no necesitas arrancarlo a mano. Usa
+  `docker stop clarif-postgres` / `docker start clarif-postgres` solo después de detenerlo tú.
 
 ## Colas
 
@@ -124,10 +138,11 @@ php artisan queue:work
 
 - Solo se procesa `runs[0]` de cada archivo SARIF (un run por archivo).
 - `codeFlows` se conserva dentro de `payload` pero no se normaliza.
-- El diffing agrupa hallazgos por un fingerprint de `rule_id | file_path | línea`. La conocida
-  **"line drift problem"** (cuando el número de línea se corre al agregar o quitar código no
-  relacionado por encima de un hallazgo) se documenta como una limitación consciente de v1, no como
-  un bug.
+- El diffing agrupa hallazgos por un fingerprint de `rule_id | file_path | línea`. Si cambios no
+  relacionados agregan o quitan líneas por encima de un hallazgo, su línea se desplaza y la huella
+  deja de coincidir aunque el problema sea el mismo. Es el conocido **"line drift problem"**;
+  herramientas como SonarQube lo resuelven con huellas basadas en el contexto de código que rodea al
+  hallazgo, mientras que Clarif decide no abordarlo en v1. Es una limitación consciente, no un bug.
 
 ## Licencia
 

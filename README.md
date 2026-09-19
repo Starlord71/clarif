@@ -10,8 +10,9 @@ It is a single-user tool (no authentication) built with Laravel 13 and PostgreSQ
 
 ## Status
 
-Uploading and parsing SARIF reports into a normalized, queryable model is implemented. The query UI
-and the run diffing are still in progress.
+Uploading and parsing SARIF reports into a normalized, queryable model is implemented, together with
+the query UI and the per-report finding filters. Diffing two runs (new, resolved, and persistent
+findings) is implemented as well. The remaining work is the distributable Docker setup.
 
 ## Requirements
 
@@ -63,7 +64,9 @@ composer dev
 ## Development database (Docker)
 
 The local PostgreSQL instance runs as a single Docker container (no `docker-compose.yml` yet; that
-comes in Phase 6):
+comes in Phase 6).
+
+The first time (the container does not exist yet), create it:
 
 ```sh
 docker run -d --name clarif-postgres \
@@ -76,12 +79,22 @@ docker run -d --name clarif-postgres \
   postgres:16-alpine
 ```
 
+On later runs the container already exists, so just start it (do **not** use `docker run --name
+clarif-postgres` again, it would fail with `container name already in use`):
+
+```sh
+docker start clarif-postgres
+```
+
 Notes:
 
 - The container is exposed on host port **5434** (not the default 5432) to avoid clashing with a
   locally installed PostgreSQL service.
-- Data is kept in the named volume `clarif-postgres-data`.
-- Stop / start it with `docker stop clarif-postgres` and `docker start clarif-postgres`.
+- Data is kept in the named volume `clarif-postgres-data`, so stopping or removing the container
+  does not delete it; starting it again reuses the same data.
+- Thanks to `--restart unless-stopped`, the container starts automatically when Docker Desktop
+  starts, so you usually do not need to start it manually. Use
+  `docker stop clarif-postgres` / `docker start clarif-postgres` only after stopping it yourself.
 
 ## Queues
 
@@ -124,9 +137,11 @@ php artisan queue:work
 
 - Only `runs[0]` of each SARIF file is processed (one run per file).
 - `codeFlows` is preserved inside `payload` but not normalized.
-- Diffing groups findings by a fingerprint of `rule_id | file_path | line`. The known
-  **"line drift problem"** (line numbers shifting when unrelated code is added or removed above a
-  finding) is documented as a conscious v1 limitation, not a bug.
+- Diffing groups findings by a fingerprint of `rule_id | file_path | line`. If unrelated changes add
+  or remove lines above a finding, its line shifts and the fingerprint stops matching even though the
+  issue is the same. This is the known **"line drift problem"**; tools such as SonarQube solve it with
+  fingerprints based on the surrounding code context, while Clarif deliberately does not address it
+  in v1. It is a conscious limitation, not a bug.
 
 ## License
 

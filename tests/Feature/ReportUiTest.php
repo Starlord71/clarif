@@ -30,6 +30,20 @@ class ReportUiTest extends TestCase
         $this->assertSame([10, 25, 50], $response->viewData('perPageOptions'));
     }
 
+    public function test_report_rows_are_clickable_and_deletion_uses_an_icon_button(): void
+    {
+        Report::factory()->create(['original_filename' => 'clickable.sarif']);
+
+        $response = $this->get(route('reports.index'));
+
+        $response->assertOk();
+        $response->assertSee('data-report-trigger', false);
+        $response->assertSee('data-delete-trigger', false);
+        $response->assertSee('data-href="'.route('reports.show', Report::first()).'"', false);
+        $response->assertDontSee('href="'.route('reports.show', Report::first()).'"');
+        $response->assertDontSee(__('reports.action_view').'</a>');
+    }
+
     public function test_the_reports_index_can_render_just_the_list_fragment(): void
     {
         Report::factory()->create();

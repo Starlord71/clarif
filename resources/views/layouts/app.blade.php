@@ -18,10 +18,16 @@
             $navActive = 'bg-white/10 text-white';
         @endphp
 
-        <header class="bg-slate-900">
+        <header class="bg-indigo-950">
             <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-                <a href="{{ route('reports.index') }}" class="text-lg font-semibold tracking-tight text-white">
-                    {{ __('reports.brand') }}
+                <a href="{{ route('reports.index') }}" class="flex items-center gap-2.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600/20 text-indigo-300 ring-1 ring-inset ring-indigo-400/30">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                        </svg>
+                    </span>
+                    <span class="text-lg font-semibold tracking-tight text-white">{{ __('reports.brand') }}</span>
                 </a>
 
                 <div class="flex flex-wrap items-center gap-3">
@@ -37,6 +43,10 @@
                         <a href="{{ route('about') }}"
                            class="{{ $navBase }} {{ request()->routeIs('about') ? $navActive : $navIdle }}">
                             {{ __('reports.nav_about') }}
+                        </a>
+                        <a href="{{ route('help') }}"
+                           class="{{ $navBase }} {{ request()->routeIs('help') ? $navActive : $navIdle }}">
+                            {{ __('reports.nav_help') }}
                         </a>
                     </nav>
 
@@ -61,6 +71,12 @@
             @if (session('status'))
                 <div class="mb-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                     {{ session('status') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    {{ session('error') }}
                 </div>
             @endif
 
@@ -97,13 +113,13 @@
              aria-labelledby="finding-detail-title"
              class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
             <div class="w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl">
-                <div class="flex items-center justify-between gap-4 bg-indigo-900 px-6 py-4">
+                <div class="flex items-center justify-between gap-4 bg-indigo-700 px-6 py-4">
                     <h3 id="finding-detail-title" class="text-lg font-semibold text-white">
                         {{ __('reports.finding_modal_title') }}
                     </h3>
                     <button type="button" data-finding-modal-cancel
                             aria-label="{{ __('reports.finding_modal_close') }}"
-                            class="rounded-md p-1 text-xl leading-none text-indigo-200 transition hover:bg-white/10 hover:text-white">
+                            class="rounded-md p-1 text-xl leading-none text-indigo-100 transition hover:bg-white/10 hover:text-white">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>

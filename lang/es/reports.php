@@ -17,6 +17,7 @@ return [
     'nav_reports' => 'Reportes',
     'nav_upload' => 'Subir',
     'nav_about' => '¿Qué es SARIF?',
+    'nav_help' => 'Ayuda',
     'language_label' => 'Idioma',
 
     // Listado.
@@ -107,6 +108,33 @@ return [
     'findings_view_detail' => 'Ver detalle',
     'finding_modal_title' => 'Detalle del hallazgo',
     'finding_modal_close' => 'Cerrar',
+
+    // Comparación.
+    'column_select' => 'Seleccionar',
+    'select_report' => 'Seleccionar reporte #:id',
+    'compare_action' => 'Comparar',
+    'compare_selection_hint' => 'Seleccioná exactamente dos reportes para compararlos.',
+    'compare_selection_ready' => 'Dos reportes seleccionados. Listo para comparar.',
+    'compare_selection_error' => 'Seleccioná exactamente dos reportes para comparar.',
+    'compare_title' => 'Comparar runs',
+    'compare_subtitle' => 'Hallazgos clasificados como nuevos, resueltos o persistentes entre dos runs.',
+    'compare_base_label' => 'Run base',
+    'compare_head_label' => 'Run head',
+    'compare_new_title' => 'Hallazgos nuevos',
+    'compare_new_description' => 'Presentes en el run head pero no en el run base.',
+    'compare_new_empty' => 'No hay hallazgos nuevos.',
+    'compare_resolved_title' => 'Hallazgos resueltos',
+    'compare_resolved_description' => 'Presentes en el run base pero ya no en el run head.',
+    'compare_resolved_empty' => 'No hay hallazgos resueltos.',
+    'compare_persistent_title' => 'Hallazgos persistentes',
+    'compare_persistent_description' => 'Presentes en ambos runs.',
+    'compare_persistent_empty' => 'No hay hallazgos persistentes.',
+    'compare_line_drift_note' => 'Los hallazgos se comparan por una huella de regla, archivo y línea estimada. Si cambios no relacionados desplazan la línea de un hallazgo, la huella deja de coincidir aunque el problema sea el mismo (el conocido "line drift problem"). Es una limitación consciente de v1, no un bug.',
+
+    // Ayuda de comparación (explicación plegable al inicio de la vista comparar).
+    'compare_help_summary' => '¿Qué estoy viendo?',
+    'compare_help_intro' => 'Esta vista compara dos runs del mismo proyecto: el run base (más antiguo) y el run head (más nuevo). Cada hallazgo se empareja por una huella construida con su regla, su archivo y su línea estimada, así que el base siempre se lee como el pasado y el head como el presente.',
+    'compare_help_fingerprint' => 'Como el emparejamiento depende del número de línea, cambios no relacionados que agreguen o quiten líneas por encima de un hallazgo pueden desplazarlo y hacer que parezca nuevo o resuelto aunque el problema sea el mismo (el "line drift problem"). Es una limitación conocida de esta versión, no un bug.',
 
     // Paginación.
     'per_page_label' => 'Por página',

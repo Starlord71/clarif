@@ -53,10 +53,11 @@
 
         <section class="mt-10">
             <h2 class="text-xl font-semibold text-slate-900">{{ __('about.diffing_title') }}</h2>
-            <div class="mt-2 space-y-4 text-slate-600">
-                <p>{{ __('about.diffing_1') }}</p>
-                <p>{{ __('about.diffing_2') }}</p>
-            </div>
+            <p class="mt-2 text-slate-600">{{ __('about.diffing_intro') }}</p>
+            <a href="{{ route('help') }}#comparar"
+               class="mt-3 inline-block text-sm font-medium text-indigo-600 transition hover:text-indigo-800">
+                {{ __('reports.nav_help') }} &rarr;
+            </a>
         </section>
 
         <div class="mt-10 border-t border-slate-200 pt-6">

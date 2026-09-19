@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | User-facing content of the standalone explainer page. It is the plain
-    | language counterpart of docs/scope and docs/diffing.
+    | language counterpart of docs/scope. Run comparison lives on the help page.
     |
     */
 
@@ -28,8 +28,7 @@ return [
     'scope_codeflows' => 'Data flows (codeFlows) are preserved as-is inside each finding, but they are not broken down into separate records.',
     'scope_severity' => 'Severity is taken from the finding when present, then from the rule\'s default level, and finally falls back to warning.',
 
-    'diffing_title' => 'Comparing two runs and the line drift problem',
-    'diffing_1' => 'Clarif identifies the same finding across two runs using a fingerprint built from its rule, file, and estimated line. That is what lets a comparison tell new findings apart from fixed and persistent ones.',
-    'diffing_2' => 'The limitation is that if unrelated changes add or remove lines above a finding, its line number shifts and the fingerprint no longer matches, even though the issue is the same. Tools such as SonarQube address this with fingerprints based on the surrounding code context. Clarif does not solve it in its current version; it is a known and conscious trade-off.',
+    'diffing_title' => 'And how do I compare two runs?',
+    'diffing_intro' => 'Run comparison has its own guide, with the details of each finding\'s fingerprint and the known line drift limitation.',
 
 ];

@@ -88,6 +88,56 @@ const formToUrl = (form) => {
     return url;
 };
 
+// Run comparison: pick exactly two reports and diff them. The older id is the
+// base run and the newer one is the head, so the diff always reads old -> new.
+document.addEventListener('change', (event) => {
+    const checkbox = event.target.closest('[data-compare-form] input[name="selected[]"]');
+
+    if (!checkbox) {
+        return;
+    }
+
+    const form = checkbox.closest('[data-compare-form]');
+    const selected = form.querySelectorAll('input[name="selected[]"]:checked').length;
+    const hint = form.querySelector('[data-compare-hint]');
+
+    if (hint) {
+        hint.textContent = selected === 2 ? form.dataset.selectionReady : form.dataset.selectionHint;
+    }
+});
+
+document.addEventListener('submit', (event) => {
+    const form = event.target.closest('[data-compare-form]');
+
+    if (!form) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const ids = Array.from(form.querySelectorAll('input[name="selected[]"]:checked'))
+        .map((input) => Number(input.value))
+        .sort((a, b) => a - b);
+
+    const hint = form.querySelector('[data-compare-hint]');
+
+    if (ids.length !== 2) {
+        if (hint) {
+            hint.textContent = form.dataset.selectionError;
+            hint.classList.add('text-red-600');
+            hint.classList.remove('text-slate-500');
+        }
+
+        return;
+    }
+
+    const url = new URL(form.dataset.compareUrl || form.action, window.location.origin);
+    url.searchParams.set('base', String(ids[0]));
+    url.searchParams.set('head', String(ids[1]));
+
+    window.location.href = url.toString();
+});
+
 // File inputs: show the chosen filename next to the custom trigger.
 document.querySelectorAll('[data-file-input]').forEach((input) => {
     const wrapper = input.closest('[data-file-wrapper]');
@@ -251,6 +301,22 @@ document.addEventListener('click', (event) => {
         return;
     }
 
+    const reportRow = event.target.closest('[data-report-trigger]');
+
+    if (reportRow) {
+        if (event.target.closest('a, button, input, label, [data-row-ignore]')) {
+            return;
+        }
+
+        if (window.getSelection()?.toString()) {
+            return;
+        }
+
+        window.location.href = reportRow.dataset.href;
+
+        return;
+    }
+
     const pageLink = event.target.closest('nav[data-pagination] a[href]');
 
     if (pageLink) {
@@ -285,6 +351,20 @@ document.addEventListener('keydown', (event) => {
         event.preventDefault();
 
         openFindingModal(row.querySelector('[data-finding-detail]'), row);
+
+        return;
+    }
+
+    const reportRow = event.target.closest?.('[data-report-trigger]');
+
+    if (reportRow && (event.key === 'Enter' || event.key === ' ')) {
+        if (event.target.closest('a, button, input, label, [data-row-ignore]')) {
+            return;
+        }
+
+        event.preventDefault();
+
+        window.location.href = reportRow.dataset.href;
     }
 });
 

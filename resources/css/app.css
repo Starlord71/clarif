@@ -50,4 +50,21 @@
         outline: 2px solid var(--color-indigo-500);
         outline-offset: -2px;
     }
+
+    /*
+     * Report rows are fully clickable to open the detail view. The delete
+     * button and the row checkboxes opt out with data-row-ignore.
+     */
+    .clarif-table tbody tr[data-report-trigger] {
+        cursor: pointer;
+    }
+
+    .clarif-table tbody tr[data-report-trigger]:hover td {
+        @apply bg-slate-200/60;
+    }
+
+    .clarif-table tbody tr[data-report-trigger]:focus-visible {
+        outline: 2px solid var(--color-indigo-500);
+        outline-offset: -2px;
+    }
 }

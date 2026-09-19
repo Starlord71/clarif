@@ -17,6 +17,7 @@ return [
     'nav_reports' => 'Reports',
     'nav_upload' => 'Upload',
     'nav_about' => 'What is SARIF?',
+    'nav_help' => 'Help',
     'language_label' => 'Language',
 
     // Listing.
@@ -107,6 +108,33 @@ return [
     'findings_view_detail' => 'View details',
     'finding_modal_title' => 'Finding details',
     'finding_modal_close' => 'Close',
+
+    // Comparison.
+    'column_select' => 'Select',
+    'select_report' => 'Select report #:id',
+    'compare_action' => 'Compare',
+    'compare_selection_hint' => 'Select exactly two reports to compare them.',
+    'compare_selection_ready' => 'Two reports selected. Ready to compare.',
+    'compare_selection_error' => 'Select exactly two reports to compare.',
+    'compare_title' => 'Compare runs',
+    'compare_subtitle' => 'Findings classified as new, resolved or persistent between two runs.',
+    'compare_base_label' => 'Base run',
+    'compare_head_label' => 'Head run',
+    'compare_new_title' => 'New findings',
+    'compare_new_description' => 'Present in the head run but not in the base run.',
+    'compare_new_empty' => 'No new findings.',
+    'compare_resolved_title' => 'Resolved findings',
+    'compare_resolved_description' => 'Present in the base run but no longer in the head run.',
+    'compare_resolved_empty' => 'No resolved findings.',
+    'compare_persistent_title' => 'Persistent findings',
+    'compare_persistent_description' => 'Present in both runs.',
+    'compare_persistent_empty' => 'No persistent findings.',
+    'compare_line_drift_note' => 'Findings are matched by a fingerprint of rule, file and estimated line. If unrelated changes shift a finding\'s line, the fingerprint no longer matches even though the issue is the same (the known "line drift problem"). It is a conscious v1 limitation, not a bug.',
+
+    // Comparison help (collapsible explainer shown at the top of the compare view).
+    'compare_help_summary' => 'What is this view?',
+    'compare_help_intro' => 'This view compares two runs of the same project: the base run (older) and the head run (newer). Each finding is matched by a fingerprint built from its rule, file and estimated line, so the base is always read as the past and the head as the present.',
+    'compare_help_fingerprint' => 'Because matching relies on the line number, unrelated changes that add or remove lines above a finding can shift it and make it look new or resolved even when the issue is the same (the "line drift problem"). It is a known limitation of this version, not a bug.',
 
     // Pagination.
     'per_page_label' => 'Per page',
