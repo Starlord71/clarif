@@ -1,25 +1,25 @@
 <?php
 
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportUploadController;
-use App\Models\Report;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/reports')->name('home');
+
+Route::get('/lang/{locale}', LocaleController::class)->name('lang');
+
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+Route::get('/reports/create', [ReportUploadController::class, 'create'])->name('reports.create');
 
 Route::post('/reports', [ReportUploadController::class, 'store'])
     ->middleware('throttle:20,1')
     ->name('reports.store');
 
-// Placeholder for the report detail view. Phase 3 replaces this with the real
-// Blade view; for now it only exposes the ingestion state as JSON.
-Route::get('/reports/{report}', function (Report $report) {
-    return response()->json([
-        'id' => $report->id,
-        'status' => $report->status->value,
-        'tool_name' => $report->tool_name,
-        'total_findings' => $report->meta['total_findings'] ?? null,
-        'error_message' => $report->error_message,
-    ]);
-})->name('reports.show');
+Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+
+Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+
+Route::get('/about', AboutController::class)->name('about');

@@ -16,6 +16,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported locales
+    |--------------------------------------------------------------------------
+    |
+    | Locales offered by the language switcher. Spanish is an explicit user
+    | choice; English remains the configured application default. Used to
+    | validate both the switcher route and the value stored in the session.
+    |
+    */
+
+    'supported_locales' => ['en', 'es'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Uploads
     |--------------------------------------------------------------------------
     |

@@ -330,6 +330,7 @@ class ParseSarifReportJob implements ShouldQueue
         $report->update([
             'status' => ReportStatus::Failed,
             'error_message' => $e->reason->label(),
+            'meta' => array_merge($report->meta ?? [], ['failure_reason' => $e->reason->value]),
         ]);
     }
 }

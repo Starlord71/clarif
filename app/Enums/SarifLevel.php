@@ -14,4 +14,12 @@ enum SarifLevel: string
     case Warning = 'warning';
     case Note = 'note';
     case None = 'none';
+
+    /**
+     * Get the user-friendly, translatable label for this severity level.
+     */
+    public function label(): string
+    {
+        return __('reports.severities.'.$this->value);
+    }
 }

@@ -6,6 +6,7 @@ use App\Enums\ReportStatus;
 use App\Jobs\ParseSarifReportJob;
 use App\Models\Report;
 use App\Rules\ValidSarifFile;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -19,6 +20,16 @@ use Illuminate\Support\Str;
  */
 class ReportUploadController extends Controller
 {
+    /**
+     * Show the SARIF upload form.
+     */
+    public function create(): View
+    {
+        return view('reports.create', [
+            'maxKilobytes' => (int) config('clarif.uploads.max_kilobytes'),
+        ]);
+    }
+
     /**
      * Store an uploaded SARIF file and queue it for parsing.
      */
@@ -45,6 +56,7 @@ class ReportUploadController extends Controller
         $report = Report::create([
             'original_filename' => mb_substr(basename($file->getClientOriginalName()), 0, 255),
             'tool_name' => config('clarif.unknown_tool_name'),
+            'stored_path' => $storedPath,
             'status' => ReportStatus::Pending,
         ]);
 
