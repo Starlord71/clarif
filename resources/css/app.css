@@ -7,3 +7,64 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/*
+ * Shared table look: a slate header and zebra-striped rows. Applied to every
+ * table in the UI so listings, findings and the future comparison view stay
+ * visually consistent.
+ */
+@layer components {
+    .clarif-table {
+        @apply min-w-full text-base;
+    }
+
+    .clarif-table thead th {
+        @apply bg-slate-100 text-left text-sm font-medium uppercase tracking-wide text-slate-700;
+    }
+
+    .clarif-table tbody tr {
+        @apply border-t border-slate-200;
+    }
+
+    .clarif-table tbody tr:nth-child(odd) td {
+        @apply bg-white;
+    }
+
+    .clarif-table tbody tr:nth-child(even) td {
+        @apply bg-slate-100;
+    }
+
+    /*
+     * Findings rows are fully clickable to open the detail modal, so the whole
+     * row is the interactive target for both pointer and keyboard users.
+     */
+    .clarif-table tbody tr[data-finding-trigger] {
+        cursor: pointer;
+    }
+
+    .clarif-table tbody tr[data-finding-trigger]:hover td {
+        @apply bg-slate-200/60;
+    }
+
+    .clarif-table tbody tr[data-finding-trigger]:focus-visible {
+        outline: 2px solid var(--color-indigo-500);
+        outline-offset: -2px;
+    }
+
+    /*
+     * Report rows are fully clickable to open the detail view. The delete
+     * button and the row checkboxes opt out with data-row-ignore.
+     */
+    .clarif-table tbody tr[data-report-trigger] {
+        cursor: pointer;
+    }
+
+    .clarif-table tbody tr[data-report-trigger]:hover td {
+        @apply bg-slate-200/60;
+    }
+
+    .clarif-table tbody tr[data-report-trigger]:focus-visible {
+        outline: 2px solid var(--color-indigo-500);
+        outline-offset: -2px;
+    }
+}

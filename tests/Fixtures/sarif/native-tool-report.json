@@ -1,0 +1,11 @@
+{
+  "version": "1.176.1",
+  "results": [
+    {
+      "check_id": "yaml.example.rule",
+      "path": "src/app.js",
+      "start": { "line": 1, "col": 1 }
+    }
+  ],
+  "errors": []
+}
