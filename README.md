@@ -15,6 +15,12 @@ the query UI and the per-report finding filters. Diffing two runs (new, resolved
 findings) is implemented as well. A one-command Docker setup (app, PostgreSQL, and the queue worker)
 is available for distribution.
 
+## Screenshots
+
+| Upload a SARIF report | Findings with filters | Compare two runs |
+| --- | --- | --- |
+| ![Upload a SARIF report](docs/images/upload.png) | ![Findings list with severity, rule and file filters](docs/images/findings.png) | ![Diff view showing new, resolved and persistent findings](docs/images/compare.png) |
+
 ## Requirements
 
 - PHP 8.4+ (required by the locked Symfony 8.x dependencies) with the `pdo_pgsql` and `pgsql`

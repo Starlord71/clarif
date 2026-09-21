@@ -15,6 +15,12 @@ junto con la UI de consulta y los filtros de hallazgos por reporte. La comparaci
 (hallazgos nuevos, resueltos y persistentes) también está implementada. Hay una distribución con
 Docker que levanta todo (app, PostgreSQL y worker de cola) con un solo comando.
 
+## Capturas de pantalla
+
+| Subir un reporte SARIF | Hallazgos con filtros | Comparar dos ejecuciones |
+| --- | --- | --- |
+| ![Subir un reporte SARIF](docs/images/upload.png) | ![Lista de hallazgos con filtros de severidad, regla y archivo](docs/images/findings.png) | ![Vista de diff con hallazgos nuevos, resueltos y persistentes](docs/images/compare.png) |
+
 ## Requisitos
 
 - PHP 8.4+ (requerido por las dependencias Symfony 8.x fijadas en el lock) con las extensiones
